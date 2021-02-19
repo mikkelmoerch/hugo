@@ -357,3 +357,44 @@ func TestPow(t *testing.T) {
 		c.Assert(result, qt.Equals, test.expect)
 	}
 }
+
+func TestMatrixMultiply(t *testing.T) {
+	t.Parallel()
+	c := qt.New(t)
+
+	ns := New()
+
+	ma := make([]interface{}, 2)
+	ma1 := make([]interface{}, 2)
+	ma1[0] = 1
+	ma1[1] = 2
+	ma2 := make([]interface{}, 2)
+	ma2[0] = 2
+	ma2[1] = 1
+	ma[0] = ma1
+	ma[1] = ma2
+
+	for _, test := range []struct {
+		val      interface{}
+		cIndex   interface{}
+		resIndex interface{}
+		m        []interface{}
+		expect   interface{}
+	}{
+		{
+			10, 0, 1, ma,
+			float64(20),
+		},
+	} {
+
+		result, err := ns.MatrixMultiply(test.val, test.cIndex, test.resIndex, test.m)
+
+		if b, ok := test.expect.(bool); ok && !b {
+			c.Assert(err, qt.Not(qt.IsNil))
+			continue
+		}
+
+		c.Assert(err, qt.IsNil)
+		c.Assert(result, qt.Equals, test.expect)
+	}
+}

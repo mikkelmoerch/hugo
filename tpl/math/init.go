@@ -113,6 +113,13 @@ func init() {
 			},
 		)
 
+		ns.AddMethodMapping(ctx.MatrixMultiply,
+			[]string{"matrixMultiply"},
+			[][2]string{
+				{"{{matrixMultiply 100 0 1 (slice (slice 1 2) (slice 2 1))}}", "200"},
+			},
+		)
+
 		return ns
 	}
 
