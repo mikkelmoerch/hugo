@@ -17,10 +17,11 @@ package math
 import (
 	"errors"
 	"math"
+	"reflect"
 
 	_math "github.com/gohugoio/hugo/common/math"
-
 	"github.com/spf13/cast"
+	"gonum.org/v1/gonum/mat"
 )
 
 // New returns a new instance of the math-namespaced template functions.
@@ -140,4 +141,63 @@ func (ns *Namespace) Round(x interface{}) (float64, error) {
 // Sub subtracts two numbers.
 func (ns *Namespace) Sub(a, b interface{}) (interface{}, error) {
 	return _math.DoArithmetic(a, b, '-')
+}
+
+// MatrixMultiply returns res of matrix multiplication of a value
+func (ns *Namespace) MatrixMultiply(v interface{}, cI interface{}, resI interface{}, m []interface{}) (float64, error) {
+	// cast interfaces to types
+	value, errv := cast.ToFloat64E(v)
+	cIndex, errci := cast.ToIntE(cI)
+	resIndex, errri := cast.ToIntE(resI)
+
+	if errv != nil {
+		return 0, errors.New("MatrixMultiply can't be used with non float value")
+	}
+
+	if errci != nil || errri != nil {
+		return 0, errors.New("MatrixMultiply can't be used with non integer value")
+	}
+
+	// Flatten array of arrays into array
+	var d []interface{}
+	for _, i := range m {
+		c := reflect.ValueOf(i)
+		for j := 0; j < c.Len(); j++ {
+			d = append(d, c.Index(j).Interface())
+		}
+	}
+
+	// Create typed float64 array from array d
+	mdata := make([]float64, len(d))
+	var err error
+	for i, unk := range d {
+		switch j := unk.(type) {
+		case int:
+			mdata[i] = float64(j)
+		case float64:
+			mdata[i] = j
+		case float32:
+			mdata[i] = float64(j)
+		case int64:
+			mdata[i] = float64(j)
+		// ...other cases...
+		default:
+			err = errors.New("MatrixMultiply: Unknown value is of incompatible type")
+		}
+	}
+
+	if err != nil {
+		return 0, err
+	}
+
+	// Create symmetrix matrix from float64 array based on original data
+	size := len(m)
+	am := mat.NewSymDense(size, mdata)
+
+	// Symmetric mulitplication of value v with created matrix
+	var resm mat.SymDense
+	resm.ScaleSym(value, am)
+
+	// Get result at desired index
+	return resm.At(cIndex, resIndex), nil
 }
