@@ -32,9 +32,15 @@ var ldflags = "-X $PACKAGE/common/hugo.commitHash=$COMMIT_HASH -X $PACKAGE/commo
 // allow user to override go executable by running as GOEXE=xxx make ... on unix-like systems
 var goexe = "go"
 
+var buildmode = "pie"
+
 func init() {
 	if exe := os.Getenv("GOEXE"); exe != "" {
 		goexe = exe
+	}
+
+	if goos := os.Getenv("GOOS"); goos == "windows" {
+		buildmode = "exe"
 	}
 
 	// We want to use Go 1.11 modules even if the source lives inside GOPATH.
@@ -44,17 +50,17 @@ func init() {
 
 // Build hugo binary
 func Hugo() error {
-	return sh.RunWith(flagEnv(), goexe, "build", "-ldflags", ldflags, "-tags", buildTags(), packageName)
+	return sh.RunWith(flagEnv(), goexe, "build", "-ldflags", ldflags, "-tags", buildTags(), "-buildmode", buildmode, packageName)
 }
 
 // Build hugo binary with race detector enabled
 func HugoRace() error {
-	return sh.RunWith(flagEnv(), goexe, "build", "-race", "-ldflags", ldflags, "-tags", buildTags(), packageName)
+	return sh.RunWith(flagEnv(), goexe, "build", "-race", "-ldflags", ldflags, "-tags", buildTags(), "-buildmode", buildmode, packageName)
 }
 
 // Install hugo binary
 func Install() error {
-	return sh.RunWith(flagEnv(), goexe, "install", "-ldflags", ldflags, "-tags", buildTags(), packageName)
+	return sh.RunWith(flagEnv(), goexe, "install", "-ldflags", ldflags, "-tags", buildTags(), "-buildmode", buildmode, packageName)
 }
 
 func flagEnv() map[string]string {
