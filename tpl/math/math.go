@@ -190,14 +190,14 @@ func (ns *Namespace) MatrixMultiply(v interface{}, cI interface{}, resI interfac
 		return 0, err
 	}
 
-	// Create symmetrix matrix from float64 array based on original data
+	// Create (dense) matrix from float64 array based on original data
 	size := len(m)
-	am := mat.NewSymDense(size, mdata)
+	am := mat.NewDense(size, size, mdata)
 
-	// Symmetric mulitplication of value v with created matrix
-	var resm mat.SymDense
-	resm.ScaleSym(value, am)
+	// Symmetric mulitplication of value with created matrix
+	var resm mat.Dense
+	resm.Scale(value, am)
 
 	// Get result at desired index
-	return resm.At(cIndex, resIndex), nil
+	return resm.At(resIndex, cIndex), nil
 }

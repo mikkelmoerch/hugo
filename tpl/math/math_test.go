@@ -365,15 +365,21 @@ func TestMatrixMultiply(t *testing.T) {
 
 	ns := New()
 
-	ma := make([]interface{}, 2)
-	ma1 := make([]interface{}, 2)
+	ma := make([]interface{}, 4)
+	ma1 := make([]interface{}, 4)
 	ma1[0] = 1
-	ma1[1] = 2
-	ma2 := make([]interface{}, 2)
-	ma2[0] = 2
+	ma1[1] = 25
+	ma1[2] = 25
+	ma1[3] = 1
+	ma2 := make([]interface{}, 4)
+	ma2[0] = 0.04
 	ma2[1] = 1
+	ma2[2] = 1
+	ma2[3] = 0.04
 	ma[0] = ma1
 	ma[1] = ma2
+	ma[2] = ma2
+	ma[3] = ma1
 
 	for _, test := range []struct {
 		val      interface{}
@@ -383,8 +389,8 @@ func TestMatrixMultiply(t *testing.T) {
 		expect   interface{}
 	}{
 		{
-			10, 0, 1, ma,
-			float64(20),
+			200, 0, 1, ma,
+			float64(8),
 		},
 	} {
 
