@@ -201,3 +201,41 @@ func (ns *Namespace) MatrixMultiply(v interface{}, cI interface{}, resI interfac
 	// Get result at desired index
 	return resm.At(resIndex, cIndex), nil
 }
+
+// NearFactorize returns the nearest integer, rounding half away from zero.
+func (ns *Namespace) NearFactorize(x interface{}) (string, error) {
+	xn := cast.ToFloat64(x)
+
+	if xn <= 0 || xn >= 8 {
+		return cast.ToString(math.Round(xn)), nil
+	}
+
+	wholeNum := ""
+	if xn >= 1 {
+		flNum := math.Floor(xn)
+		wholeNum = cast.ToString(flNum) + " "
+		xn = xn - flNum
+	}
+
+	if xn == 0 {
+		return cast.ToString(x), nil
+	}
+
+	diff := float64(1)
+	res := ""
+	for i := 1; i < 8; i++ {
+		for j := 1 + i; j < 9; j++ {
+			iFloat := cast.ToFloat64(i)
+			jFloat := cast.ToFloat64(j)
+			cdiff := math.Abs((iFloat / jFloat) - xn)
+			if cdiff < diff {
+				res = string(wholeNum + cast.ToString(i) + "/" + cast.ToString(j))
+			} else {
+				break
+			}
+			diff = cdiff
+		}
+	}
+
+	return res, nil
+}

@@ -120,6 +120,13 @@ func init() {
 			},
 		)
 
+		ns.AddMethodMapping(ctx.NearFactorize,
+			[]string{"nearFactorize"},
+			[][2]string{
+				{"{{nearFactorize 0.7}}", "3/4"},
+			},
+		)
+
 		return ns
 
 	}

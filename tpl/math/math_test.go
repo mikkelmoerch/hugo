@@ -405,3 +405,37 @@ func TestMatrixMultiply(t *testing.T) {
 		c.Assert(result, qt.Equals, test.expect)
 	}
 }
+
+func TestNearFactorize(t *testing.T) {
+	t.Parallel()
+	c := qt.New(t)
+
+	ns := New()
+
+	for _, test := range []struct {
+		a      interface{}
+		expect interface{}
+	}{
+		{1, "1"},
+		{2, "2"},
+		{1.225, "1 1/4"},
+		{0.937, "7/8"},
+		{0.72, "3/4"},
+		{0.6, "2/3"},
+		{0.5, "1/2"},
+		{0.3, "1/3"},
+		{0.23, "1/4"},
+		{0.21, "1/5"},
+	} {
+
+		result, err := ns.NearFactorize(test.a)
+
+		if b, ok := test.expect.(bool); ok && !b {
+			c.Assert(err, qt.Not(qt.IsNil))
+			continue
+		}
+
+		c.Assert(err, qt.IsNil)
+		c.Assert(result, qt.Equals, test.expect)
+	}
+}
