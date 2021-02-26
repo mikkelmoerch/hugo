@@ -206,7 +206,7 @@ func (ns *Namespace) MatrixMultiply(v interface{}, cI interface{}, resI interfac
 func (ns *Namespace) NearFactorize(x interface{}) (string, error) {
 	xn := cast.ToFloat64(x)
 
-	if xn <= 0 || xn >= 8 {
+	if xn <= 0 || xn >= 8 || math.Mod(xn, 1) == 0 {
 		return cast.ToString(math.Round(xn)), nil
 	}
 
@@ -215,10 +215,6 @@ func (ns *Namespace) NearFactorize(x interface{}) (string, error) {
 		flNum := math.Floor(xn)
 		wholeNum = cast.ToString(flNum) + " "
 		xn = xn - flNum
-	}
-
-	if xn == 0 {
-		return cast.ToString(x), nil
 	}
 
 	diff := float64(1)
